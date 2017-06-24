@@ -30,7 +30,7 @@ public:
 	std::vector<Move> getMoves(int player);
 
 	/**
-	* Intoarce true daca jocul este intr-o stare finala
+	* Intoarce true daca jocul s-a terminat
 	*/
 	bool ended();
 
@@ -38,6 +38,7 @@ public:
 	* Functia de evaluare a starii curente a jocului
 	* Evaluarea se face din perspectiva jucatorului
 	* aflat curent la mutare (player)
+	* -1 = the player lost, 1 = the player won, 0 = no one won
 	*/
 	int eval(int player);
 
@@ -48,7 +49,7 @@ public:
 	bool apply_move(const Move &move);
 
 	/**
-	* Aplica o mutarea inversa
+	* Aplica mutarea inversa
 	*/
 	void reverse(const Move &move);
 
@@ -57,6 +58,9 @@ public:
 	*/
 	void print();
 
+	/**
+	* Determina cine a castigat
+	*/
 	cell winner();
 
 	X0();

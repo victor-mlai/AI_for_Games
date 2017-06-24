@@ -42,45 +42,6 @@ minimax_abeta(X0 state, int player, int depth, int alfa, int beta) {
 	return std::pair<int, Move>(alfa, bestMove);
 }
 
-// gets a random move from the best ones
-Move getRandomMove(X0 x0, int player, int depth) {
-	if (depth == 0 || x0.ended()) {
-		return Move();
-	}
-
-	srand((unsigned int)time(NULL));
-
-	int alfa = -Inf;
-	int beta = Inf;
-	int score;
-	std::vector<Move> moves = x0.getMoves(player);
-	std::vector<Move> BestMoves;
-	for (Move move : moves) {
-		x0.apply_move(move);
-
-		score = minimax_abeta(x0, -player, depth - 1, -beta, -alfa).first;
-
-		if (-score > alfa) {
-			alfa = -score;
-			BestMoves.clear();
-			BestMoves.push_back(move);
-		} else if (-score == alfa) {
-			alfa = -score;
-			BestMoves.push_back(move);
-		}
-
-		if (alfa >= beta) {
-			break;
-		}
-
-		// reverse move
-		x0.reverse(move);
-	}
-
-	int r = rand() % BestMoves.size();
-	return BestMoves[r];
-}
-
 int main() {
 	X0 x0;
 	Players player1, player2;
