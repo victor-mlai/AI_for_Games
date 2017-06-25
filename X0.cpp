@@ -8,7 +8,7 @@ X0::~X0() {
 	table.clear();
 }
 
-void X0::init() {
+inline void X0::init() {
 	table = vector< vector<cell> >(3, vector<cell>(3, cell::N));
 }
 
@@ -66,11 +66,11 @@ std::vector<Move> X0::getMoves(int player) {
 	return moves;
 }
 
-bool X0::ended() {
+inline bool X0::ended() {
 	return getMoves(0).empty() || winner() != N;
 }
 
-int X0::eval(int player) {
+inline int X0::eval(int player) {
 	return player*winner();
 }
 
@@ -81,6 +81,6 @@ bool X0::apply_move(const Move & move) {
 	return true;
 }
 
-void X0::reverse(const Move & move) {
+inline void X0::reverse(const Move & move) {
 	table[move.row][move.col] = cell::N;
 }
