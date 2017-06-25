@@ -110,9 +110,13 @@ int main() {
 		break;	// daca nu s-a intrat in deafault, se iese din do while
 	} while (true);
 
+	Players aux = player1;
+	player1 = player2;
+	player2 = aux;
+
 	while (true) {	// while replaying
 		x0.print();
-		int turn = 1;	// X starts
+		int turn = -1;	// X starts
 		Players currentPlayer;
 		while (!x0.ended())
 		{
@@ -128,7 +132,7 @@ int main() {
 					// Read human move and if it's valid, apply it
 					int row, col;
 					do {
-						std::cout << "Insert row & column: ";
+						std::cout << "Insert row & column (Format: row col)\n";
 						std::cin >> row >> col;
 					} while (!x0.apply_move(Move(row, col, turn)));
 					break;
@@ -159,9 +163,9 @@ int main() {
 		x0.init();
 
 		//swap players
-		Players aux = player1;
-		player1 = player2;
-		player2 = aux;
+		//Players aux = player1;
+		//player1 = player2;
+		//player2 = aux;
 	}
 
 	return 0;

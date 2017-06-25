@@ -9,7 +9,8 @@ X0::~X0() {
 }
 
 void X0::init() {
-	table = vector< vector<cell> >(3, vector<cell>(3, cell::N));
+	table = vector< vector<cell> >(3, vector<cell>(3, N));
+	table[0][0] = X;
 }
 
 void X0::print() {
