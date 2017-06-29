@@ -81,7 +81,10 @@ bool X0::ended() {
 	return getMoves(0).empty() || winner() != N;
 }
 
-// Returns -1 if player lost, 1 if player 1 and 0 if no one won yet
+bool X0::ended() {
+	return getMoves(0).empty() || winner() != N;
+}
+
 int X0::eval(int player) {
 	return player*winner();
 }
@@ -101,10 +104,15 @@ int X0::winner() {
 	if (table[0][0] == table[1][1] && table[1][1] == table[2][2] && table[1][1] != N)
 		return table[1][1];
 
+
 	// check II diag
 	if (table[0][2] == table[1][1] && table[1][1] == table[2][0] && table[1][1] != N)
 		return table[1][1];
 
 	// no one won yet
 	return N;
+}
+
+void X0::reverse(const Move & move) {
+	table[move.row][move.col] = cell::N;
 }
