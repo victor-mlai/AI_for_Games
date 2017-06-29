@@ -16,7 +16,7 @@ enum Players{Human, AI, Monkey};
 std::pair<int, Move*>
 minimax_abeta(Game* state, int player, int depth, int alfa, int beta) {
 	if (depth == 0 || state->ended()) {
-		return std::pair<int, Move*>(state->eval(player), new Move());
+		return std::pair<int, Move*>(state->eval(player), nullptr);
 	}
 
 	Move* bestMove;
