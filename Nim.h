@@ -1,27 +1,27 @@
 #pragma once
 #include "Game.h"
 
-enum cell{X = 1, Z = -1, N = 0};	// X or Z(Zero) or N(None)
-
-// Reprezinta mutarea in jocu X & 0
-class X0Move : public Move
+/**
+* Reprezinta mutarea in jocu Nim
+*/
+class NimMove : public Move
 {
 public:
-	int row, col;	// line and columnn
-	int c;	// -1 or 1 (X or 0)
+	int amount; /* Cantitatea extrasa (1, 2 sau 3) */
+	int heap; /* Indicile multimii din care se face extragerea */
 
-	X0Move(int row, int col, int c) : row(row), col(col), c(c) {}
-	X0Move(){}
+	NimMove(int amount, int heap) : amount(amount), heap(heap) {}
+	NimMove() {}
 };
 
-class X0 : public Game
+class Nim : public Game
 {
 private:
-	vector< vector<cell> > table;
+	int heaps[3];
 public:
-	X0();
-	~X0();
-	
+	Nim();
+	~Nim();
+
 	// Initializeaza jocul
 	void init();
 
@@ -35,7 +35,7 @@ public:
 	Move* readHumanMove(int player);
 
 	/**
-	* Intoarce true daca jocul s-a terminat
+	* Intoarce true daca jocul este intr-o stare finala
 	*/
 	bool ended();
 
@@ -53,7 +53,7 @@ public:
 	bool apply_move(Move* move);
 
 	/**
-	* Aplica mutarea inversa
+	* Aplica o mutarea inversa
 	*/
 	void reverse(Move* move);
 
@@ -62,9 +62,6 @@ public:
 	*/
 	void print();
 
-	/**
-	* Determina cine a castigat
-	*/
 	int winner();
 
 	/**
@@ -72,4 +69,3 @@ public:
 	*/
 	void showRezult(int turn);
 };
-
