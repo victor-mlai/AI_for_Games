@@ -7,25 +7,31 @@
 	None = 0
 */
 
-// Reprezinta mutarea in jocu X & 0
-class X0Move : public Move
+/**
+* Reprezinta mutarea in jocu Nim
+*/
+class RevMove : public Move
 {
 public:
-	int row, col;	// line and columnn
-	int c;	// -1 or 1 (X or 0)
+	int player; /* Jucatorul care face mutarea */
+	int row, col;
 
-	X0Move(int row, int col, int c) : row(row), col(col), c(c) {}
-	X0Move(){}
+	RevMove(int row, int col, int player) : row(row), col(col), player(player) {}
+	RevMove() {}
 };
 
-class X0 : public Game
+class Reversi :
+	public Game
 {
 private:
+	int n = 6;	// table dimension
 	vector< vector<int> > table;
 public:
-	X0();
-	~X0();
-	
+	Reversi();
+	~Reversi();
+
+	void setN(int n);
+
 	// Initializeaza jocul
 	void init();
 
@@ -39,14 +45,15 @@ public:
 	Move* readHumanMove(int player);
 
 	/**
-	* Intoarce true daca jocul s-a terminat
+	* Intoarce true daca jocul este intr-o stare finala
 	*/
 	bool ended();
 
 	/**
-	* Cu cat e mai buna mutarea pentru jucatorul curent (player)
+	* Evalueaza starea jocului
+	* Cu cat a fost mai buna mutarea jucatorului curent (player)
 	* cu atat valoarea returnata trebuie sa fie mai mare
-	* Ex: -Inf = the player lost, Inf = the player won
+	* Ex: -Inf = daca player a pierdut, Inf = daca a castigat
 	*/
 	int eval(int player);
 
@@ -57,7 +64,7 @@ public:
 	bool apply_move(Move* move);
 
 	/**
-	* Aplica mutarea inversa
+	* Aplica o mutarea inversa
 	*/
 	void reverse(Move* move);
 
@@ -66,9 +73,6 @@ public:
 	*/
 	void print();
 
-	/**
-	* Determina cine a castigat
-	*/
 	int winner();
 
 	/**

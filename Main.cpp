@@ -1,6 +1,7 @@
 #include "Game.h"	// Base game class
 #include "X0.h"
 #include "Nim.h"
+#include "Reversi.h"
 #include <conio.h> // _getch()
 #include <time.h> // rand()
 
@@ -40,7 +41,8 @@ minimax_abeta(Game* state, int player, int depth, int alfa, int beta) {
 		}
 	}
 
-	return std::pair<int, Move*>(alfa, bestMove);
+	//return std::pair<int, Move*>(alfa, bestMove);
+	return std::pair<int, Move*>(alfa + player*state->eval(player), bestMove);
 }
 
 int main() {
@@ -58,41 +60,37 @@ int main() {
 			game = new Nim();
 			break;
 		default:
-			return 0;
+			game = new Reversi();
 			break;
 	}
 
 	player1 = Human;
 
-	// Choosing player2
-	do { // se asteapta decizia 1, 2 sau 3
-		std::cout << "Against\n1) AI\n2) a friend\n3) a monkey\nPress 1, 2 or 3\n\n";
-		switch (_getch()) {
-			case '1':
-				player2 = AI;
-				depth = 9;	// all of them
-				break;
-			case '2':
-				player2 = Human;
-				break;
-			case '3':
-				player2 = Monkey;
-				depth = 5;
-				break;
-			default:
-				continue;
-		}
-		break;	// daca nu s-a intrat in deafault, se iese din do while
-	} while (true);
+	// Choosing Player 2
+	std::cout << "Against\n1) a friend\n2) AI\nx) a monkey\nPress 1, 2 or 3\n\n";
+	switch (_getch()) {
+		case '1':
+			player2 = Human;
+			break;
+		case '2':
+			player2 = AI;
+			depth = 9;
+			break;
+		default:
+			player2 = Monkey;
+			depth = 5;
+			break;
+	}
 
 	// while replaying
 	while (true) {
 		game->print();
-		int turn = 1;
+		int turn = -1;
 		Players currentPlayer;
+
 		while (!game->ended())
 		{
-			if (turn == 1) {
+			if (turn == -1) {
 				currentPlayer = player1;
 			}
 			else {

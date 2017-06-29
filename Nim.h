@@ -40,9 +40,10 @@ public:
 	bool ended();
 
 	/**
-	* Cu cat e mai buna mutarea pentru jucatorul curent (player)
+	* Evalueaza starea jocului
+	* Cu cat a fost mai buna mutarea jucatorului curent (player)
 	* cu atat valoarea returnata trebuie sa fie mai mare
-	* Ex: -Inf = the player lost, Inf = the player won
+	* Ex: -Inf = daca player a pierdut, Inf = daca a castigat
 	*/
 	int eval(int player);
 
