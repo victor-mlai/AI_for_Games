@@ -10,7 +10,6 @@ X0::~X0() {
 
 void X0::init() {
 	table = vector< vector<cell> >(3, vector<cell>(3, N));
-	table[0][0] = X;
 }
 
 void X0::print() {
@@ -31,7 +30,63 @@ void X0::print() {
 	}
 }
 
-cell X0::winner() {
+void X0::showRezult(int turn) {
+	int win = winner();
+	if (win == X)
+		std::cout << "X WON!" << std::endl;
+	else if (win == Z)
+		std::cout << "0 WON!" << std::endl;
+	else
+		std::cout << "Draw" << std::endl;
+}
+
+std::vector<Move*> X0::getMoves(int player) {
+	vector<Move*> moves;
+	for (int row = 0; row < 3; row++) {
+		for (int col = 0; col < 3; col++) {
+			if (table[row][col] == cell::N) {
+				moves.push_back(new X0Move(row, col, player));
+			}
+		}
+	}
+
+	return moves;
+}
+
+Move* X0::readHumanMove(int player) {
+	int row, col;
+	std::cout << "Insert row & column (Format: row col)\n";
+	std::cin >> row >> col;
+
+	return new X0Move(row, col, player);
+}
+
+bool X0::apply_move(Move* mv) {
+	X0Move move = *(X0Move*)mv;
+
+	if (move.row < 0 || move.row > 2 || move.col < 0 || move.col > 2 || table[move.row][move.col] != N)
+		return false;
+
+	table[move.row][move.col] = (cell)move.c;
+	return true;
+}
+
+void X0::reverse(Move* mv) {
+	X0Move move = *(X0Move*)mv;
+
+	table[move.row][move.col] = N;
+}
+
+bool X0::ended() {
+	return getMoves(0).empty() || winner() != N;
+}
+
+// Returns -1 if player lost, 1 if player 1 and 0 if no one won yet
+int X0::eval(int player) {
+	return player*winner();
+}
+
+int X0::winner() {
 	for (int i = 0; i < 3; i++) {
 		// check rows
 		if (table[0][i] == table[1][i] && table[1][i] == table[2][i] && table[0][i] != N)
@@ -52,36 +107,4 @@ cell X0::winner() {
 
 	// no one won yet
 	return N;
-}
-
-std::vector<Move> X0::getMoves(int player) {
-	vector<Move> moves;
-	for (int row = 0; row < 3; row++) {
-		for (int col = 0; col < 3; col++) {
-			if (table[row][col] == cell::N) {
-				moves.push_back(Move(row, col, player));
-			}
-		}
-	}
-
-	return moves;
-}
-
-bool X0::ended() {
-	return getMoves(0).empty() || winner() != N;
-}
-
-int X0::eval(int player) {
-	return player*winner();
-}
-
-bool X0::apply_move(const Move & move) {
-	if (move.row < 0 || move.row > 2 || move.col < 0 || move.col > 2 || table[move.row][move.col] != cell::N)
-		return false;
-	table[move.row][move.col] = (cell)move.c;
-	return true;
-}
-
-void X0::reverse(const Move & move) {
-	table[move.row][move.col] = cell::N;
 }
