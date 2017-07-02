@@ -1,6 +1,7 @@
 #include "Nim.h"
 
 Nim::Nim() {
+	std::cout << "Win by not taking the last *\n";
 	init();
 }
 
@@ -8,8 +9,8 @@ Nim::~Nim() {}
 
 void Nim::init() {
 	heaps[0] = 3;
-	heaps[1] = 4;
-	heaps[2] = 5;
+	heaps[1] = 5;
+	heaps[2] = 7;
 }
 
 /**
@@ -80,12 +81,12 @@ bool Nim::ended() {
 	return winner() < 1;
 }
 
-// Returns -1 if player lost, 1 if player 1 and 0 if no one won yet
+// Returns -1 if player lost, 1 if player won and 0 if no one won yet
 int Nim::eval(int player) {
 	if (winner() == 0)
-		return Inf;		// Win for the current player, next player will lose.
+		return 1;		// Win for the current player, next player will lose.
 	else if (winner() == 1)
-		return -Inf;	// Lose for the current player, next player will win.
+		return -1;	// Lose for the current player, next player will win.
 
 	return 0;
 }
