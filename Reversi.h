@@ -3,9 +3,11 @@
 
 /*
 	X = -1
-	0 = 1
+	O = 1
 	None = 0
 */
+
+struct Point { int x, y; };
 
 /**
 * Reprezinta mutarea in jocu Nim
@@ -15,9 +17,12 @@ class RevMove : public Move
 public:
 	int player; /* Jucatorul care face mutarea */
 	int row, col;
+	vector< vector<int> > table;	// Retin starea jocului inainte de fiecare mutare sa pot da undo
 
-	RevMove(int row, int col, int player) : row(row), col(col), player(player) {}
-	RevMove() {}
+	RevMove(int row, int col, int player, int n) : row(row), col(col), player(player) {
+		table = vector< vector<int> >(n, vector<int>(n));
+	}
+	~RevMove() { table.clear(); }
 };
 
 class Reversi :
@@ -26,9 +31,14 @@ class Reversi :
 private:
 	int n = 6;	// table dimension
 	vector< vector<int> > table;
+	vector< vector<int> > heuristic;
 public:
 	Reversi();
 	~Reversi();
+
+	bool isOutsidePoint(Point p);
+
+	bool isValid(RevMove mv);
 
 	void setN(int n);
 

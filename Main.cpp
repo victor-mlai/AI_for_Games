@@ -21,13 +21,11 @@ minimax_abeta(Game* state, int player, int depth, int alfa, int beta) {
 
 	Move* bestMove;
 	int score;
-	std::pair<int, Move*> p;
 	std::vector<Move*> moves = state->getMoves(player);
 	for (Move* move : moves) {
 		state->apply_move(move);
 
-		p = minimax_abeta(state, -player, depth - 1, -beta, -alfa);
-		score = p.first;
+		score = minimax_abeta(state, -player, depth - 1, -beta, -alfa).first;
 
 		state->reverse(move);
 
@@ -41,8 +39,8 @@ minimax_abeta(Game* state, int player, int depth, int alfa, int beta) {
 		}
 	}
 
-	//return std::pair<int, Move*>(alfa, bestMove);
-	return std::pair<int, Move*>(alfa + player*state->eval(player), bestMove);
+	return std::pair<int, Move*>(alfa, bestMove);
+	//return std::pair<int, Move*>(alfa + player*state->eval(player), bestMove);
 }
 
 int main() {
@@ -55,12 +53,15 @@ int main() {
 	switch (_getch()) {
 		case '1':
 			game = new X0();
+			depth = 5;
 			break;
 		case '2':
 			game = new Nim();
+			depth = 3;
 			break;
 		default:
 			game = new Reversi();
+			depth = 1;
 			break;
 	}
 
@@ -74,18 +75,17 @@ int main() {
 			break;
 		case '2':
 			player2 = AI;
-			depth = 9;
+			depth *= 2;
 			break;
 		default:
 			player2 = Monkey;
-			depth = 5;
 			break;
 	}
 
 	// while replaying
 	while (true) {
 		game->print();
-		int turn = -1;
+		int turn = -1;	// first player starts
 		Players currentPlayer;
 
 		while (!game->ended())
@@ -106,7 +106,7 @@ int main() {
 					} while (!game->apply_move(humanMove));
 					delete humanMove;
 					break;
-				case AI:
+				case AI:	// AI has depth = 2* depth of Monkey
 				case Monkey:
 					game->apply_move(minimax_abeta(game, turn, depth, -Inf, Inf).second);
 					break;

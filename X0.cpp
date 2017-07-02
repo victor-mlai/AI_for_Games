@@ -10,7 +10,6 @@ X0::~X0() {
 
 void X0::init() {
 	table = vector< vector<int> >(3, vector<int>(3, 0));
-	table[0][1] = -1;
 }
 
 void X0::print() {

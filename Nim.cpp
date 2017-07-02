@@ -95,8 +95,8 @@ int Nim::winner() {
 }
 
 void Nim::showRezult(int turn) {
-	if (turn == 1)
+	if (turn == -1)
 		std::cout << "Player 1 WON!" << std::endl;
 	else
-		std::cout << "Player 1 LOST!" << std::endl;
+		std::cout << "Player 2 WON!" << std::endl;
 }
