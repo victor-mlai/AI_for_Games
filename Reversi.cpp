@@ -13,8 +13,10 @@ bool Reversi::isOutsidePoint(Point p) {
 	return p.x < 0 || p.y < 0 || p.x >= n || p.y >= n;
 }
 
-bool Reversi::isValid(RevMove mv)
+bool Reversi::isValid(Move* move)
 {
+	RevMove mv = *(RevMove*)move;
+
 	Point n = { mv.row, mv.col };
 	if (isOutsidePoint(n) || table[mv.row][mv.col] != 0)
 		return false;
@@ -80,7 +82,7 @@ std::vector<Move*> Reversi::getMoves(int player)
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			mv = new RevMove(i, j, player, n);
-			if (isValid(*mv)) {
+			if (isValid(mv)) {
 				moves.push_back(mv);
 			}
 			else {
@@ -88,13 +90,20 @@ std::vector<Move*> Reversi::getMoves(int player)
 			}
 		}
 	}
+	moves.push_back(new RevMove(-1, -1, player, n));	// add the Pas move
 
 	return moves;
 }
 
 Move* Reversi::readHumanMove(int player)
 {
-	std::cout << "Write position from:\n";
+	if (player == -1)
+		cout << "Player 1 turn: ";
+	else
+		cout << "Player 2 turn: "; 
+	
+	cout << "Press U to undo or\n";
+	cout << "Write position from:\n";
 	cout << " {-1, -1} (Pas move), " << endl << " ";
 
 	vector<Move*> moves = getMoves(player);
@@ -104,8 +113,13 @@ Move* Reversi::readHumanMove(int player)
 	}
 	cout << endl;
 
+
 	int i, j;
-	cin >> i >> j;
+	i = _getch();
+	if (i == 'u') { return new Move(true); }
+	i -= '0';
+	cout << i;
+	cin >> j;
 
 	return new RevMove(i, j, player, n);
 }
@@ -115,9 +129,9 @@ bool Reversi::ended()
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < n; j++)
 		{
-			if (isValid(RevMove(i, j, 1, n)))
+			if (isValid(new RevMove(i, j, 1, n)))
 				return false;
-			if (isValid(RevMove(i, j, -1, n)))
+			if (isValid(new RevMove(i, j, -1, n)))
 				return false;
 		}
 
@@ -150,15 +164,12 @@ int Reversi::eval(int player)
 	return score + (my_tiles - op_tiles) * 5;// +m * 20;
 }
 
-bool Reversi::apply_move(Move * mv)
+void Reversi::apply_move(Move * mv)
 {
 	RevMove move = *(RevMove*)mv;
 	RevMove* temp = (RevMove*)mv;
 	if (move.row == -1 && move.col == -1)	// daca am mutarea nula
-		return true;
-	
-	if (!isValid(move))
-		return false;
+		return ;
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
@@ -190,14 +201,15 @@ bool Reversi::apply_move(Move * mv)
 			}
 		}
 	}
-
-	return true;
 }
 
-void Reversi::reverse(Move * mv)
+void Reversi::undo(Move * mv)
 {
 	RevMove move = *(RevMove*)mv;
 
+	if (move.row == -1 && move.col == -1)	// daca am mutarea nula
+		return; 
+	
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			table[i][j] = move.table[i][j];
@@ -229,28 +241,22 @@ void Reversi::print()
 	std::cout << std::endl;
 }
 
-int Reversi::winner()
-{
-	return 0;
-}
-
 void Reversi::showRezult(int turn)
 {
 	int s = 0;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			if (table[i][j] == turn)
+			if (table[i][j] == -1)
 				s++;
-			else if (table[i][j] == -turn)
+			else if (table[i][j] == 1)
 				s--;
 		}
 	}
 
 	if (s > 0)
-		std::cout << "Player 1 WON!" << std::endl;
+		std::cout << "X WON!" << std::endl;
 	else if (s < 0)
-		std::cout << "Player 2 WON!" << std::endl;
+		std::cout << "O WON!" << std::endl;
 	else
 		std::cout << "Draw" << std::endl;
-
 }

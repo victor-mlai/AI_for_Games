@@ -11,7 +11,7 @@ public:
 	int heap; /* Indicile multimii din care se face extragerea */
 
 	NimMove(int amount, int heap) : amount(amount), heap(heap) {}
-	NimMove() {}
+	~NimMove() {}
 };
 
 class Nim : public Game
@@ -48,22 +48,26 @@ public:
 	int eval(int player);
 
 	/**
-	* Aplica o mutarea a jucatorului asupra starii curente
 	* Returneaza false daca mutarea e invalida
 	*/
-	bool apply_move(Move* move);
+	bool isValid(Move* move);
+
+	/*
+	* Aplica o mutarea a jucatorului asupra starii curente
+	*/
+	void apply_move(Move* move);
 
 	/**
 	* Aplica o mutarea inversa
 	*/
-	void reverse(Move* move);
+	void undo(Move* move);
 
 	/**
 	* Afiseaza starea jocului
 	*/
 	void print();
 
-	int winner();
+	int nrOfStarsLeft();
 
 	/**
 	* Afiseaza rezultatul jocului

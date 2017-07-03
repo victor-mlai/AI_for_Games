@@ -2,8 +2,9 @@
 #include "X0.h"
 #include "Nim.h"
 #include "Reversi.h"
-#include <conio.h> // _getch()
-#include <time.h> // rand()
+#include "Chess.h"
+#include <time.h>	// rand()
+#include <stack>	// undos
 
 enum Players{Human, AI, Monkey};
 
@@ -22,12 +23,13 @@ minimax_abeta(Game* state, int player, int depth, int alfa, int beta) {
 	Move* bestMove;
 	int score;
 	std::vector<Move*> moves = state->getMoves(player);
+
 	for (Move* move : moves) {
 		state->apply_move(move);
 
 		score = minimax_abeta(state, -player, depth - 1, -beta, -alfa).first;
 
-		state->reverse(move);
+		state->undo(move);
 
 		if (-score > alfa) {
 			alfa = -score;
@@ -40,7 +42,6 @@ minimax_abeta(Game* state, int player, int depth, int alfa, int beta) {
 	}
 
 	return std::pair<int, Move*>(alfa, bestMove);
-	//return std::pair<int, Move*>(alfa + player*state->eval(player), bestMove);
 }
 
 int main() {
@@ -49,7 +50,7 @@ int main() {
 
 	// Choosing Game
 	Game* game;
-	std::cout << "Which game?\n1) X & 0\n2) Nim\nx) Reversi\nPress 1, 2 or 3\n\n";
+	std::cout << "Which game?\n 1) X & 0\n 2) Nim\n 3) Reversi\n x) Chess\n Press 1, 2, 3 or 4\n\n";
 	switch (_getch()) {
 		case '1':
 			game = new X0();
@@ -59,9 +60,13 @@ int main() {
 			game = new Nim();
 			depth = 3;
 			break;
-		default:
+		case '3':
 			game = new Reversi();
-			depth = 1;
+			depth = 2;
+			break;
+		default:
+			game = new Chess();
+			depth = 2;
 			break;
 	}
 
@@ -84,9 +89,11 @@ int main() {
 
 	// while replaying
 	while (true) {
+		system("cls");
 		game->print();
 		int turn = -1;	// first player starts
 		Players currentPlayer;
+		stack<Move*> appliedMoves;
 
 		while (!game->ended())
 		{
@@ -99,21 +106,39 @@ int main() {
 
 			switch (currentPlayer) {
 				case Human:
-					Move* humanMove;
 					// Read human move and if it's valid, apply it
-					do {
+					Move* humanMove;
+					while (true) {
 						humanMove = game->readHumanMove(turn);
-					} while (!game->apply_move(humanMove));
-					delete humanMove;
+						if (humanMove->undo) {
+							if (appliedMoves.size() > 1) {
+								game->undo(appliedMoves.top());
+								appliedMoves.pop();
+
+								game->undo(appliedMoves.top());
+								appliedMoves.pop();
+
+								system("cls");
+								game->print();
+							}
+						}
+						else if (game->isValid(humanMove)) {
+							break;
+						}
+					}
+					game->apply_move(humanMove);
+					appliedMoves.push(humanMove);
 					break;
 				case AI:	// AI has depth = 2* depth of Monkey
 				case Monkey:
-					game->apply_move(minimax_abeta(game, turn, depth, -Inf, Inf).second);
+					appliedMoves.push(minimax_abeta(game, turn, depth, -Inf, Inf).second);
+					game->apply_move(appliedMoves.top());
 					break;
 				default:
 					break;
 			}
 
+			system("cls");
 			game->print();
 			turn *= -1;
 		}

@@ -15,7 +15,7 @@ public:
 	int c;	// -1 or 1 (X or 0)
 
 	X0Move(int row, int col, int c) : row(row), col(col), c(c) {}
-	X0Move(){}
+	~X0Move(){}
 };
 
 class X0 : public Game
@@ -51,15 +51,19 @@ public:
 	int eval(int player);
 
 	/**
-	* Aplica o mutarea a jucatorului asupra starii curente
 	* Returneaza false daca mutarea e invalida
 	*/
-	bool apply_move(Move* move);
+	bool isValid(Move* move);
+
+	/*
+	* Aplica o mutarea a jucatorului asupra starii curente
+	*/
+	void apply_move(Move* move);
 
 	/**
 	* Aplica mutarea inversa
 	*/
-	void reverse(Move* move);
+	void undo(Move* move);
 
 	/**
 	* Afiseaza starea jocului

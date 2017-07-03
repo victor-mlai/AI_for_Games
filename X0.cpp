@@ -20,7 +20,7 @@ void X0::print() {
 		for (int col = 0; col < 3; col++) {
 			switch (table[row][col]) {
 				case -1: cout << "X"; break;
-				case 1: cout << "0"; break;
+				case 1: cout << "O"; break;
 				case 0: cout << " "; break;
 				default: break;
 			}
@@ -35,7 +35,7 @@ void X0::showRezult(int turn) {
 	if (win == -1)
 		std::cout << "X WON!" << std::endl;
 	else if (win == 1)
-		std::cout << "0 WON!" << std::endl;
+		std::cout << "O WON!" << std::endl;
 	else
 		std::cout << "Draw" << std::endl;
 }
@@ -55,23 +55,42 @@ std::vector<Move*> X0::getMoves(int player) {
 
 Move* X0::readHumanMove(int player) {
 	int row, col;
-	std::cout << "Insert row & column (Format: row col)\n";
-	std::cin >> row >> col;
+
+	if (player == -1)
+		cout << "X turn: ";
+	else
+		cout << "O turn: ";
+	
+	cout << "Press U to undo or\n";
+	cout << "Insert row & column (Format: row col)\n";
+
+	row = _getch();
+	if (row == 'u') { return new Move(true); }
+	row -= '0';
+	cout << row;
+
+	cin >> col;
 
 	return new X0Move(row, col, player);
 }
 
-bool X0::apply_move(Move* mv) {
+bool X0::isValid(Move * mv)
+{
 	X0Move move = *(X0Move*)mv;
 
 	if (move.row < 0 || move.row > 2 || move.col < 0 || move.col > 2 || table[move.row][move.col] != 0)
 		return false;
 
-	table[move.row][move.col] = move.c;
 	return true;
 }
 
-void X0::reverse(Move* mv) {
+void X0::apply_move(Move* mv) {
+	X0Move move = *(X0Move*)mv;
+
+	table[move.row][move.col] = move.c;
+}
+
+void X0::undo(Move* mv) {
 	X0Move move = *(X0Move*)mv;
 
 	table[move.row][move.col] = 0;
