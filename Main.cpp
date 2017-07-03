@@ -1,8 +1,10 @@
 #include "Game.h"	// Base game class
 #include "X0.h"
 #include "Nim.h"
-#include <conio.h> // _getch()
-#include <time.h> // rand()
+#include "Reversi.h"
+#include "Chess.h"
+#include <time.h>	// rand()
+#include <stack>	// undos
 
 enum Players{Human, AI, Monkey};
 
@@ -15,20 +17,19 @@ enum Players{Human, AI, Monkey};
 std::pair<int, Move*>
 minimax_abeta(Game* state, int player, int depth, int alfa, int beta) {
 	if (depth == 0 || state->ended()) {
-		return std::pair<int, Move*>(state->eval(player), new Move());
+		return std::pair<int, Move*>(state->eval(player), nullptr);
 	}
 
 	Move* bestMove;
 	int score;
-	std::pair<int, Move*> p;
 	std::vector<Move*> moves = state->getMoves(player);
+
 	for (Move* move : moves) {
 		state->apply_move(move);
 
-		p = minimax_abeta(state, -player, depth - 1, -beta, -alfa);
-		score = p.first;
+		score = minimax_abeta(state, -player, depth - 1, -beta, -alfa).first;
 
-		state->reverse(move);
+		state->undo(move);
 
 		if (-score > alfa) {
 			alfa = -score;
@@ -49,50 +50,54 @@ int main() {
 
 	// Choosing Game
 	Game* game;
-	std::cout << "Which game?\n1) X & 0\n2) Nim\nx) Reversi\nPress 1, 2 or 3\n\n";
+	std::cout << "Which game?\n 1) X & 0\n 2) Nim\n 3) Reversi\n x) Chess\n Press 1, 2, 3 or 4\n\n";
 	switch (_getch()) {
 		case '1':
 			game = new X0();
+			depth = 5;
 			break;
 		case '2':
 			game = new Nim();
+			depth = 3;
+			break;
+		case '3':
+			game = new Reversi();
+			depth = 2;
 			break;
 		default:
-			return 0;
+			game = new Chess();
+			depth = 2;
 			break;
 	}
 
 	player1 = Human;
 
-	// Choosing player2
-	do { // se asteapta decizia 1, 2 sau 3
-		std::cout << "Against\n1) AI\n2) a friend\n3) a monkey\nPress 1, 2 or 3\n\n";
-		switch (_getch()) {
-			case '1':
-				player2 = AI;
-				depth = 9;	// all of them
-				break;
-			case '2':
-				player2 = Human;
-				break;
-			case '3':
-				player2 = Monkey;
-				depth = 5;
-				break;
-			default:
-				continue;
-		}
-		break;	// daca nu s-a intrat in deafault, se iese din do while
-	} while (true);
+	// Choosing Player 2
+	std::cout << "Against\n1) a friend\n2) AI\nx) a monkey\nPress 1, 2 or 3\n\n";
+	switch (_getch()) {
+		case '1':
+			player2 = Human;
+			break;
+		case '2':
+			player2 = AI;
+			depth *= 2;
+			break;
+		default:
+			player2 = Monkey;
+			break;
+	}
 
 	// while replaying
 	while (true) {
+		system("cls");
 		game->print();
-		int turn = 1;
+		int turn = -1;	// first player starts
 		Players currentPlayer;
+		stack<Move*> appliedMoves;
+
 		while (!game->ended())
 		{
-			if (turn == 1) {
+			if (turn == -1) {
 				currentPlayer = player1;
 			}
 			else {
@@ -101,21 +106,39 @@ int main() {
 
 			switch (currentPlayer) {
 				case Human:
-					Move* humanMove;
 					// Read human move and if it's valid, apply it
-					do {
+					Move* humanMove;
+					while (true) {
 						humanMove = game->readHumanMove(turn);
-					} while (!game->apply_move(humanMove));
-					delete humanMove;
+						if (humanMove->undo) {
+							if (appliedMoves.size() > 1) {
+								game->undo(appliedMoves.top());
+								appliedMoves.pop();
+
+								game->undo(appliedMoves.top());
+								appliedMoves.pop();
+
+								system("cls");
+								game->print();
+							}
+						}
+						else if (game->isValid(humanMove)) {
+							break;
+						}
+					}
+					game->apply_move(humanMove);
+					appliedMoves.push(humanMove);
 					break;
-				case AI:
+				case AI:	// AI has depth = 2* depth of Monkey
 				case Monkey:
-					game->apply_move(minimax_abeta(game, turn, depth, -Inf, Inf).second);
+					appliedMoves.push(minimax_abeta(game, turn, depth, -Inf, Inf).second);
+					game->apply_move(appliedMoves.top());
 					break;
 				default:
 					break;
 			}
 
+			system("cls");
 			game->print();
 			turn *= -1;
 		}

@@ -1,26 +1,44 @@
 #pragma once
 #include "Game.h"
 
+/*
+	X = -1
+	O = 1
+	None = 0
+*/
+
+struct Point { int x, y; };
+
 /**
 * Reprezinta mutarea in jocu Nim
 */
-class NimMove : public Move
+class RevMove : public Move
 {
 public:
-	int amount; /* Cantitatea extrasa (1, 2 sau 3) */
-	int heap; /* Indicile multimii din care se face extragerea */
+	int player; /* Jucatorul care face mutarea */
+	int row, col;
+	vector< vector<int> > table;	// Retin starea jocului inainte de fiecare mutare sa pot da undo
 
-	NimMove(int amount, int heap) : amount(amount), heap(heap) {}
-	~NimMove() {}
+	RevMove(int row, int col, int player, int n) : row(row), col(col), player(player) {
+		table = vector< vector<int> >(n, vector<int>(n));
+	}
+	~RevMove() { table.clear(); }
 };
 
-class Nim : public Game
+class Reversi :
+	public Game
 {
 private:
-	int heaps[3];
+	int n = 6;	// table dimension
+	vector< vector<int> > table;
+	vector< vector<int> > heuristic;
 public:
-	Nim();
-	~Nim();
+	Reversi();
+	~Reversi();
+
+	bool isOutsidePoint(Point p);
+
+	void setN(int n);
 
 	// Initializeaza jocul
 	void init();
@@ -67,10 +85,9 @@ public:
 	*/
 	void print();
 
-	int nrOfStarsLeft();
-
 	/**
 	* Afiseaza rezultatul jocului
 	*/
 	void showRezult(int turn);
 };
+

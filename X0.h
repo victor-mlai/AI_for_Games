@@ -1,7 +1,11 @@
 #pragma once
 #include "Game.h"
 
-enum cell{X = 1, Z = -1, N = 0};	// X or Z(Zero) or N(None)
+/*
+	X = -1
+	0 = 1
+	None = 0
+*/
 
 // Reprezinta mutarea in jocu X & 0
 class X0Move : public Move
@@ -11,13 +15,13 @@ public:
 	int c;	// -1 or 1 (X or 0)
 
 	X0Move(int row, int col, int c) : row(row), col(col), c(c) {}
-	X0Move(){}
+	~X0Move(){}
 };
 
 class X0 : public Game
 {
 private:
-	vector< vector<cell> > table;
+	vector< vector<int> > table;
 public:
 	X0();
 	~X0();
@@ -47,15 +51,19 @@ public:
 	int eval(int player);
 
 	/**
-	* Aplica o mutarea a jucatorului asupra starii curente
 	* Returneaza false daca mutarea e invalida
 	*/
-	bool apply_move(Move* move);
+	bool isValid(Move* move);
+
+	/*
+	* Aplica o mutarea a jucatorului asupra starii curente
+	*/
+	void apply_move(Move* move);
 
 	/**
 	* Aplica mutarea inversa
 	*/
-	void reverse(Move* move);
+	void undo(Move* move);
 
 	/**
 	* Afiseaza starea jocului

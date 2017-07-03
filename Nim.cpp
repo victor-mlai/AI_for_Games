@@ -1,6 +1,7 @@
 #include "Nim.h"
 
 Nim::Nim() {
+	std::cout << "Win by not taking the last *\n";
 	init();
 }
 
@@ -8,13 +9,10 @@ Nim::~Nim() {}
 
 void Nim::init() {
 	heaps[0] = 3;
-	heaps[1] = 4;
-	heaps[2] = 5;
+	heaps[1] = 5;
+	heaps[2] = 7;
 }
 
-/**
-* Afiseaza starea jocului
-*/
 void Nim::print() {
 	for (int i = 0; i < 3; i++) {
 		std::cout << i << ":";
@@ -25,10 +23,6 @@ void Nim::print() {
 	std::cout << std::endl;
 }
 
-/**
-* Returneaza o lista cu mutarile posibile
-* care pot fi efectuate de player
-*/
 std::vector<Move*> Nim::getMoves(int player) {
 	std::vector<Move*> ret;
 	for (int i = 0; i < 3; i++)
@@ -40,63 +34,67 @@ std::vector<Move*> Nim::getMoves(int player) {
 
 Move* Nim::readHumanMove(int player) {
 	int am, h;
+	
+	if (player == -1)
+		cout << "Player 1 turn: ";
+	else
+		cout << "Player 2 turn: ";
+	
+	cout << "Press U to undo or\n";
 	std::cout << "Insert amount [1, 2 or 3] and heap [0, 1 or 2]: ";
-	std::cin >> am >> h;
 
+	am = _getch();
+	if (am == 'u') { return new Move(true); }
+	am -= '0';
+	cout << am;
+	cin >> h;
+	
 	return new NimMove(am, h);
 }
 
-/**
-* Aplica o mutarea a jucatorului asupra starii curente
-* Returneaza false daca mutarea e invalida
-*/
-bool Nim::apply_move(Move* mv) {
-	NimMove move = *(NimMove*)mv;
+bool Nim::isValid(Move* move) {
+	NimMove mv = *(NimMove*)move;
 
-	if (move.amount > 3 ||
-		move.amount < 1 ||
-		move.heap > 2 ||
-		move.heap < 0 ||
-		heaps[move.heap] - move.amount < 0)
+	if (mv.amount > 3 || mv.amount < 1 || mv.heap > 2 || mv.heap < 0 ||
+		heaps[mv.heap] - mv.amount < 0)
 		return false;
 
-	heaps[move.heap] -= move.amount;
 	return true;
 }
 
-/**
-* Aplica mutarea inversa
-*/
-void Nim::reverse(Move* mv) {
+void Nim::apply_move(Move* mv) {
+	NimMove move = *(NimMove*)mv;
+
+	heaps[move.heap] -= move.amount;
+}
+
+void Nim::undo(Move* mv) {
 	NimMove move = *(NimMove*)mv;
 
 	heaps[move.heap] += move.amount;
 }
 
-/**
-* Intoarce true daca jocul este intr-o stare finala
-*/
 bool Nim::ended() {
-	return winner() < 1;
+	return nrOfStarsLeft() < 1;
 }
 
-// Returns -1 if player lost, 1 if player 1 and 0 if no one won yet
+// Returns -1 if player lost, 1 if player won and 0 if no one won yet
 int Nim::eval(int player) {
-	if (winner() == 0)
-		return Inf;		// Win for the current player, next player will lose.
-	else if (winner() == 1)
-		return -Inf;	// Lose for the current player, next player will win.
+	if (nrOfStarsLeft() == 0)
+		return 1;		// Win for the current player, next player will lose.
+	else if (nrOfStarsLeft() == 1)
+		return -1;	// Lose for the current player, next player will win.
 
 	return 0;
 }
 
-int Nim::winner() {
+int Nim::nrOfStarsLeft() {
 	return heaps[0] + heaps[1] + heaps[2];
 }
 
 void Nim::showRezult(int turn) {
-	if (turn == 1)
+	if (turn == -1)
 		std::cout << "Player 1 WON!" << std::endl;
 	else
-		std::cout << "Player 1 LOST!" << std::endl;
+		std::cout << "Player 2 WON!" << std::endl;
 }
