@@ -81,6 +81,7 @@ Move * Chess::readHumanMove(int player)
 	return new ChessMove(Arow - '0' - 1, Acol - 'a', Brow - '0' - 1, Bcol - 'a', player);
 }
 
+// gets the absolute value of x
 int abs(int x) {
 	return x > 0 ? x : -x;
 }
@@ -89,6 +90,7 @@ int max(int a, int b) {
 	return a > b ? a : b;
 }
 
+// gets the normalized value of x
 int norm(int x) {
 	return x < 0 ? -1 : (x > 0 ? 1 : 0);
 }
@@ -109,10 +111,10 @@ bool Chess::isValid(Move * move)
 	// taking my own piece
 	if (table[mv.to.x][mv.to.y] * mv.player > 0)	return false;
 
-	P c = mv.from;	// current piece position
+	Pair c = mv.from;	// current piece position
 	int x = mv.to.x - mv.from.x;
 	int y = mv.to.y - mv.from.y;
-	P d = { norm(x), norm(y) };	// direction
+	Pair d = { norm(x), norm(y) };	// direction
 
 	// distance between the 2 positions
 	x = abs(x);
@@ -136,7 +138,7 @@ bool Chess::isValid(Move * move)
 		}
 		break;
 	case 2:	// knight
-		if (x + y != 3 || x == 3 || y == 3)	return false;
+		if (x + y != 3 || x == 3 || y == 3)	return false;	// return (x + y == 3 && x != 3 && y != 3);
 		break;
 	case 3:	// bishop
 		if (x != y)	return false;
@@ -163,7 +165,7 @@ bool Chess::isValid(Move * move)
 		}
 		break;
 	case 5:	// king
-		if (x > 1 || y > 1)	return false;
+		if (x > 1 || y > 1)	return false;	// return !(x > 1 || y > 1);
 		break;
 	case 6:	// pawn
 		if ((mv.to.x - mv.from.x) * mv.player < 0)	return false;
@@ -278,7 +280,7 @@ void Chess::print()
 			case -2:
 			case 2: std::cout << "|  / o| "; break;
 			case -3:
-			case 3: std::cout << "|   0   "; break;
+			case 3: std::cout << "|   o   "; break;
 			case -4:
 			case 4: std::cout << "|  \\^/  "; break;
 			case -5:
@@ -319,11 +321,11 @@ void Chess::print()
 			case 2: cout << "|  /XX| "; break;
 			case -3: cout << "|  (_)  "; break;
 			case 3: cout << "|  (X)  "; break;
-			case -4: cout << "| (___) "; break;
-			case 4: cout << "| (XXX) "; break;
-			case -5: cout << "| (___) "; break;
-			case 5: cout << "| (XXX) "; break;
+			case -4:
+			case -5:
 			case -6: cout << "| (___) "; break;
+			case 4:
+			case 5:
 			case 6: cout << "| (XXX) "; break;
 			}
 		cout << "|\n";

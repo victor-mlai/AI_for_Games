@@ -17,21 +17,23 @@ bool Reversi::isValid(Move* move)
 {
 	RevMove mv = *(RevMove*)move;
 
-	Point n = { mv.row, mv.col };
-	if (isOutsidePoint(n) || table[mv.row][mv.col] != 0)
+	if (mv.row == -1)	return true;
+
+	Point v = { mv.row, mv.col };
+	if (isOutsidePoint(v) || table[mv.row][mv.col] != 0)
 		return false;
 
 	for (int k = 0; k < 8; k++) {
-		n = d[k];
-		n.x += mv.row;
-		n.y += mv.col;
+		v = d[k];
+		v.x += mv.row;
+		v.y += mv.col;
 
-		if (!isOutsidePoint(n) && table[n.x][n.y] == -mv.player) {
-			while (!isOutsidePoint(n) && table[n.x][n.y] == -mv.player) {
-				n.x += d[k].x;
-				n.y += d[k].y;
+		if (!isOutsidePoint(v) && table[v.x][v.y] == -mv.player) {
+			while (!isOutsidePoint(v) && table[v.x][v.y] == -mv.player) {
+				v.x += d[k].x;
+				v.y += d[k].y;
 			}
-			if (!isOutsidePoint(n) && table[n.x][n.y] == mv.player) {
+			if (!isOutsidePoint(v) && table[v.x][v.y] == mv.player) {
 				return true;
 			}
 		}
@@ -47,32 +49,32 @@ void Reversi::setN(int n)
 
 void Reversi::init()
 {
-	table = vector< vector<int> >(n, vector<int>(n));
-	table[n / 2 - 1][n / 2 - 1] = table[n / 2][n / 2] = 1;
-	table[n / 2 - 1][n / 2] = table[n / 2][n / 2 - 1] = -1;
-
-	heuristic = vector< vector<int> >(n, vector<int>(n));
-	heuristic[0][0] = heuristic[n - 1][0] = heuristic[0][n - 1] = heuristic[n - 1][n - 1] = 99;
-	heuristic[1][1] = heuristic[n - 2][1] = heuristic[1][n - 2] = heuristic[n - 2][n - 2] = -24;
-
-	heuristic[0][1] = heuristic[n - 1][1] = heuristic[1][n - 1] = heuristic[n - 2][n - 1] = -8;
-	heuristic[1][0] = heuristic[n - 2][0] = heuristic[0][n - 2] = heuristic[n - 1][n - 2] = -8;
-
-	for (int i = 2; i <= n / 2 - 1; i++) {
-		heuristic[0][i] = heuristic[0][n - i - 1] = heuristic[n - 1][i] = heuristic[n - 1][n - i - 1] = (n - i) * 2;
-		heuristic[i][0] = heuristic[n - i - 1][0] = heuristic[i][n - 1] = heuristic[n - i - 1][n - 1] = (n - i) * 2;
-	}
-
-	for (int i = 2; i <= n / 2 - 1; i++) {
-		heuristic[1][i] = heuristic[1][n - i - 1] = heuristic[n - 2][i] = heuristic[n - 2][n - i - 1] = -(n - i);
-		heuristic[i][1] = heuristic[n - i - 1][1] = heuristic[i][n - 2] = heuristic[n - i - 1][n - 2] = -(n - i);
-	}
-
-	for (int i = 2; i <= n / 2 - 1; i++) {
-		for (int j = 2; j <= n / 2 - 1; j++) {
-			heuristic[i][j] = heuristic[i][n - j - 1] = heuristic[n - i - 1][j] = heuristic[n - i - 1][n - j - 1] = (n*n - 4*i*j);
-		}
-	}
+	//table = vector< vector<int> >(n, vector<int>(n));
+	//table[n / 2 - 1][n / 2 - 1] = table[n / 2][n / 2] = 1;
+	//table[n / 2 - 1][n / 2] = table[n / 2][n / 2 - 1] = -1;
+	//
+	//heuristic = vector< vector<int> >(n, vector<int>(n));
+	//heuristic[0][0] = heuristic[n - 1][0] = heuristic[0][n - 1] = heuristic[n - 1][n - 1] = 99;
+	//heuristic[1][1] = heuristic[n - 2][1] = heuristic[1][n - 2] = heuristic[n - 2][n - 2] = -24;
+	//
+	//heuristic[0][1] = heuristic[n - 1][1] = heuristic[1][n - 1] = heuristic[n - 2][n - 1] = -8;
+	//heuristic[1][0] = heuristic[n - 2][0] = heuristic[0][n - 2] = heuristic[n - 1][n - 2] = -8;
+	//
+	//for (int i = 2; i <= n / 2 - 1; i++) {
+	//	heuristic[0][i] = heuristic[0][n - i - 1] = heuristic[n - 1][i] = heuristic[n - 1][n - i - 1] = (n - i) * 2;
+	//	heuristic[i][0] = heuristic[n - i - 1][0] = heuristic[i][n - 1] = heuristic[n - i - 1][n - 1] = (n - i) * 2;
+	//}
+	//
+	//for (int i = 2; i <= n / 2 - 1; i++) {
+	//	heuristic[1][i] = heuristic[1][n - i - 1] = heuristic[n - 2][i] = heuristic[n - 2][n - i - 1] = -(n - i);
+	//	heuristic[i][1] = heuristic[n - i - 1][1] = heuristic[i][n - 2] = heuristic[n - i - 1][n - 2] = -(n - i);
+	//}
+	//
+	//for (int i = 2; i <= n / 2 - 1; i++) {
+	//	for (int j = 2; j <= n / 2 - 1; j++) {
+	//		heuristic[i][j] = heuristic[i][n - j - 1] = heuristic[n - i - 1][j] = heuristic[n - i - 1][n - j - 1] = (n*n - 4*i*j);
+	//	}
+	//}
 }
 
 std::vector<Move*> Reversi::getMoves(int player)
@@ -98,25 +100,27 @@ std::vector<Move*> Reversi::getMoves(int player)
 Move* Reversi::readHumanMove(int player)
 {
 	if (player == -1)
-		cout << "Player 1 turn: ";
+		cout << "X turn:\n";
 	else
-		cout << "Player 2 turn: "; 
+		cout << "O turn:\n"; 
 	
 	cout << "Press U to undo or\n";
+	cout << "Press P to Pas the move or\n";
 	cout << "Write position from:\n";
-	cout << " {-1, -1} (Pas move), " << endl << " ";
 
 	vector<Move*> moves = getMoves(player);
-	for (Move* move : moves) {
-		RevMove* mv = (RevMove*)move;
+	int s = moves.size();
+	for (int i = 0; i < s - 1; i++) {
+		RevMove* mv = (RevMove*)(moves[i]);
 		cout << "{" << mv->row << ", " << mv->col << "}, ";
 	}
 	cout << endl;
 
-
 	int i, j;
 	i = _getch();
 	if (i == 'u') { return new Move(true); }
+	if (i == 'p') { return new RevMove(-1, -1, player, n); }
+
 	i -= '0';
 	cout << i;
 	cin >> j;
@@ -141,18 +145,18 @@ bool Reversi::ended()
 
 int Reversi::eval(int player)
 {
-	int score = 0;
+	int h = 0;
 	int my_tiles = 0;
 	int op_tiles = 0;
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			if (table[i][j] == player) {
-				score += heuristic[i][j];
+				h += heuristic[i][j];
 				my_tiles++;
 			}
 			else if (table[i][j] == -player) {
-				score -= heuristic[i][j];
+				h -= heuristic[i][j];
 				op_tiles++;
 			}
 		}
@@ -161,15 +165,14 @@ int Reversi::eval(int player)
 	// Mobility
 //	int m = getMoves(player).size() - getMoves(-player).size();
 
-	return score + (my_tiles - op_tiles) * 5;// +m * 20;
+	int score = h + (my_tiles - op_tiles) * 15;// +m * 20;
+	return score;
 }
 
 void Reversi::apply_move(Move * mv)
 {
 	RevMove move = *(RevMove*)mv;
 	RevMove* temp = (RevMove*)mv;
-	if (move.row == -1 && move.col == -1)	// daca am mutarea nula
-		return ;
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
@@ -178,26 +181,28 @@ void Reversi::apply_move(Move * mv)
 	}
 
 	mv = (Move*)temp;
+	if (move.row == -1)	// daca am mutarea nula
+		return;
 
-	Point n;
+	Point v;
 	for (int k = 0; k < 8; k++) {
-		n = d[k];
-		n.x += move.row;
-		n.y += move.col;
-		if (!isOutsidePoint(n) && table[n.x][n.y] == -move.player) {
-			while (!isOutsidePoint(n) && table[n.x][n.y] == -move.player) {
-				n.x += d[k].x;
-				n.y += d[k].y;
+		v = d[k];
+		v.x += move.row;
+		v.y += move.col;
+		if (!isOutsidePoint(v) && table[v.x][v.y] == -move.player) {
+			while (!isOutsidePoint(v) && table[v.x][v.y] == -move.player) {
+				v.x += d[k].x;
+				v.y += d[k].y;
 			}
-			if (!isOutsidePoint(n) && table[n.x][n.y] == move.player) {
-				n.x -= d[k].x;
-				n.y -= d[k].y;
-				while (table[n.x][n.y] == -move.player) {
-					table[n.x][n.y] = move.player;
-					n.x -= d[k].x;
-					n.y -= d[k].y;
+			if (!isOutsidePoint(v) && table[v.x][v.y] == move.player) {
+				v.x -= d[k].x;
+				v.y -= d[k].y;
+				while (table[v.x][v.y] == -move.player) {
+					table[v.x][v.y] = move.player;
+					v.x -= d[k].x;
+					v.y -= d[k].y;
 				}
-				table[n.x][n.y] = move.player;
+				table[v.x][v.y] = move.player;
 			}
 		}
 	}
@@ -224,10 +229,8 @@ void Reversi::print()
 	}
 	std::cout << std::endl;
 
-	for (int i = 0; i < n; i++)
-	{
-		for (int j = 0; j< n; j++)
-		{
+	for (int i = 0; i < n; i++)	{
+		for (int j = 0; j < n; j++) {
 			if (table[i][j] == 0)
 				std::cout << '.';
 			else if (table[i][j] == 1)

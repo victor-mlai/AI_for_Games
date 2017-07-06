@@ -30,8 +30,22 @@ class Reversi :
 {
 private:
 	int n = 6;	// table dimension
-	vector< vector<int> > table;
-	vector< vector<int> > heuristic;
+	//vector< vector<int> > table;
+	//vector< vector<int> > heuristic;
+	int table[6][6] = { { 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 1,-1, 0, 0 },
+						{ 0, 0,-1, 1, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0 } };
+
+	int heuristic[6][6] = { {99,  -8,  8,  8,  -8, 99 },
+							{-8, -24, -4, -4, -24, -8 },
+							{ 8,  -4,  0,  0,  -4,  8 },
+							{ 8,  -4,  0,  0,  -4,  8 },
+							{-8, -24, -4, -4, -24, -8 },
+							{99,  -8,  8,  8,  -8, 99 } };
+
 public:
 	Reversi();
 	~Reversi();

@@ -1,13 +1,13 @@
 #pragma once
 #include "Game.h"
 
-struct P { int x, y; };
+struct Pair { int x, y; };
 
 class ChessMove : public Move
 {
 public:
-	P from;
-	P to;
+	Pair from;
+	Pair to;
 	int player;	// -1 or 1 (White or Black)
 	int pieceTaken;
 
