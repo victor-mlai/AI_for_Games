@@ -79,6 +79,12 @@ public:
 	*/
 	std::vector<Move*> getMoves(int player);
 
+	Move * getNextMove(Move * prevMove, int player);
+	/*
+	used for getting the next move
+	*/
+	Move * getInitMove(int player);
+
 	// Returneaza mutarea citita
 	Move* readHumanMove(int player);
 
@@ -120,4 +126,3 @@ public:
 	*/
 	void showRezult(int turn);
 };
-

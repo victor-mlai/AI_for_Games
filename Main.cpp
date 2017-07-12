@@ -20,19 +20,24 @@ minimax_abeta(Game* state, int player, int depth, int alfa, int beta) {
 		return std::pair<int, Move*>(state->eval(player), nullptr);
 	}
 
-	Move* bestMove;
 	int score;
-	std::vector<Move*> moves = state->getMoves(player);
+	Move* bestMove = NULL;
 
-	for (Move* move : moves) {
+	/* 
+	gets a move, applies it, and then goes to the next one
+	( more effiecient in terms of memory )
+	*/
+	Move* move = state->getInitMove(player);	// move used to get the first valid move
+	// while move is not NULL
+	while (move = state->getNextMove(move, player)) {
 		state->apply_move(move);
 
-		score = minimax_abeta(state, -player, depth - 1, -beta, -alfa).first;
+		score = -minimax_abeta(state, -player, depth - 1, -beta, -alfa).first;
 
 		state->undo(move);
 
-		if (-score > alfa) {
-			alfa = -score;
+		if (score > alfa) {
+			alfa = score;
 			bestMove = move;
 		}
 
@@ -41,6 +46,26 @@ minimax_abeta(Game* state, int player, int depth, int alfa, int beta) {
 		}
 	}
 
+	/* Gets all possible moves and iterates through them */
+	//std::vector<Move*> moves = state->getMoves(player);
+	//
+	//for (Move* move : moves) {
+	//	state->apply_move(move);
+	//
+	//	score = minimax_abeta(state, -player, depth - 1, -beta, -alfa).first;
+	//
+	//	state->undo(move);
+	//
+	//	if (-score > alfa) {
+	//		alfa = -score;
+	//		bestMove = move;
+	//	}
+	//
+	//	if (alfa >= beta) {
+	//		break;
+	//	}
+	//}
+
 	return std::pair<int, Move*>(alfa, bestMove);
 }
 
@@ -48,10 +73,11 @@ int main() {
 	Players player1, player2;
 	int depth;	// how many moves the AI can foresee
 
-	// Choosing Game
-	Game* game;
-	std::cout << "Which game?\n 1) X & 0\n 2) Nim\n 3) Reversi\n x) Chess\n Press 1, 2, 3 or 4\n\n";
-	switch (_getch()) {
+	while (true) {
+		// Choosing Game
+		Game* game;
+		std::cout << "Which game?\n 1) X & 0\n 2) Nim\n 3) Reversi\n x) Chess\n Press 1, 2, 3 or 4\n\n";
+		switch (_getch()) {
 		case '1':
 			game = new X0();
 			depth = 5;
@@ -68,13 +94,13 @@ int main() {
 			game = new Chess();
 			depth = 2;
 			break;
-	}
+		}
 
-	player1 = Human;
+		player1 = Human;
 
-	// Choosing Player 2
-	std::cout << "Against\n1) a friend\n2) AI\nx) a monkey\nPress 1, 2 or 3\n\n";
-	switch (_getch()) {
+		// Choosing Player 2
+		std::cout << "Against\n1) a friend\n2) AI\nx) a monkey\nPress 1, 2 or 3\n\n";
+		switch (_getch()) {
 		case '1':
 			player2 = Human;
 			break;
@@ -85,32 +111,33 @@ int main() {
 		default:
 			player2 = Monkey;
 			break;
-	}
+		}
 
-	// while replaying
-	while (true) {
-		system("cls");
-		game->print();
-		int turn = -1;	// first player starts
-		Players currentPlayer;
-		stack<Move*> appliedMoves;
+		// while replaying
+		while (true) {
+			system("cls");
+			game->print();
+			// if turn = 1 => it's 0 or Black's turn
+			int turn = -1;	// X / White starts
+			Players currentPlayer;
+			stack<Move*> appliedMoves;
 
-		while (!game->ended())
-		{
-			if (turn == -1) {
-				currentPlayer = player1;
-			}
-			else {
-				currentPlayer = player2;
-			}
+			while (!game->ended())
+			{
+				if (turn == -1) {
+					currentPlayer = player1;
+				}
+				else {
+					currentPlayer = player2;
+				}
 
-			switch (currentPlayer) {
+				switch (currentPlayer) {
 				case Human:
 					// Read human move and if it's valid, apply it
 					Move* humanMove;
 					while (true) {
 						humanMove = game->readHumanMove(turn);
-						if (humanMove->undo) {
+						if (humanMove && humanMove->undo) {
 							if (appliedMoves.size() > 1) {
 								game->undo(appliedMoves.top());
 								appliedMoves.pop();
@@ -136,26 +163,30 @@ int main() {
 					break;
 				default:
 					break;
+				}
+
+				system("cls");
+				game->print();
+				turn *= -1;
 			}
 
-			system("cls");
-			game->print();
-			turn *= -1;
+			game->showRezult(turn);
+
+			std::cout << "Play again?\n y/n\n";
+			if (_getch() == 'n')
+				break;
+
+			// reinit the game
+			game->init();
+
+			// swap players so the other player can start first
+			Players aux = player1;
+			player1 = player2;
+			player2 = aux;
 		}
-
-		game->showRezult(turn);
-
-		std::cout << "Play again?\n y/n\n";
+		std::cout << "Wanna try another game?\n y/n\n";
 		if (_getch() == 'n')
 			break;
-
-		// reinit the game
-		game->init();
-
-		// swap players so the other player can start first
-		Players aux = player1;
-		player1 = player2;
-		player2 = aux;
 	}
 
 	return 0;

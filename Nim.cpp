@@ -32,6 +32,29 @@ std::vector<Move*> Nim::getMoves(int player) {
 	return ret;
 }
 
+Move * Nim::getNextMove(Move * prevMove, int player)
+{
+	NimMove* pmv = (NimMove*)prevMove;
+
+	int k = pmv->amount;
+	int i = pmv->heap - 1; 
+	for (; k > 0; k--) {	// starting with taking the most amount
+		for (; i >= 0; i--) {
+			if (k <= heaps[i])
+				return new NimMove(k, i);
+		}
+		i = 2;
+	}
+
+	return NULL;
+}
+
+// move used to get the first valid move
+Move * Nim::getInitMove(int player)
+{
+	return new NimMove(3, 3);
+}
+
 Move* Nim::readHumanMove(int player) {
 	int am, h;
 	

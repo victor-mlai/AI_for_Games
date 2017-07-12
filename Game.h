@@ -29,6 +29,16 @@ public:
 	*/
 	virtual std::vector<Move*> getMoves(int player) = 0;
 
+	/*
+	Returns the next move to be made by the AI using the last move applied
+	*/
+	virtual Move* getNextMove(Move * prevMove, int player) = 0;
+
+	/*
+	move used to get the first valid move
+	*/
+	virtual Move* getInitMove(int player) = 0;
+
 	// Returneaza false daca mutarea este invalida
 	virtual Move* readHumanMove(int player) = 0;
 

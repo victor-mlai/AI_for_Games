@@ -53,6 +53,29 @@ std::vector<Move*> X0::getMoves(int player) {
 	return moves;
 }
 
+Move * X0::getNextMove(Move * prevMove, int player)
+{
+	X0Move* pmv = (X0Move*)prevMove;
+	int row = pmv->row;
+	int col = pmv->col + 1;
+	for (; row < 3; row++) {
+		for (; col < 3; col++) {
+			if (table[row][col] == 0) {
+				return new X0Move(row, col, player);
+			}
+		}
+		col = 0;
+	}
+
+	return NULL;
+}
+
+// move used to get the first valid move
+Move * X0::getInitMove(int player)
+{
+	return new X0Move(0, -1, player);
+}
+
 Move* X0::readHumanMove(int player) {
 	int row, col;
 

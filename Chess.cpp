@@ -50,6 +50,42 @@ std::vector<Move*> Chess::getMoves(int player)
 	return moves;
 }
 
+Move * Chess::getNextMove(Move * prevMove, int player) {
+	ChessMove* pmv = (ChessMove*)prevMove;
+
+	Move * move;
+	int i = pmv->from.x;
+	int j = pmv->from.y;
+	int x = pmv->to.x;
+	int y = pmv->to.y + 1;
+	for (; i < 8; i++) {
+		for (; j < 8; j++) {
+			if (table[i][j] * player > 0) {	// if it's player's piece
+											// search where I can put it
+				for (; x < 8; x++) {
+					for (; y < 8; y++) {
+						move = new ChessMove(i, j, x, y, player);
+						if (isValid(move)) {
+							return move;
+						}
+						delete move;
+					}
+					y = 0;
+				}
+				x = 0;
+			}
+		}
+		j = 0;
+	}
+
+	return NULL;
+}
+
+// move used to get the first valid move
+Move * Chess::getInitMove(int player) {
+	return new ChessMove(0, 0, 0, 0, player);
+}
+
 Move * Chess::readHumanMove(int player)
 {
 	if (player == -1)
@@ -277,16 +313,16 @@ void Chess::print()
 			case 0: std::cout << "|       "; break;
 			case -1:
 			case 1: std::cout << "| [---] "; break;
-			case -2:
+			case -2:std::cout << "|  / o| "; break;
 			case 2: std::cout << "|  / o| "; break;
-			case -3:
-			case 3: std::cout << "|   o   "; break;
+			case -3:std::cout << "|   o   "; break;
+			case 3: std::cout << "|   x   "; break;
 			case -4:
 			case 4: std::cout << "|  \\^/  "; break;
 			case -5:
 			case 5: std::cout << "|  =|=  "; break;
-			case -6:
-			case 6: std::cout << "|  ( )  "; break;
+			case -6:std::cout << "|  ( )  "; break;
+			case 6: std::cout << "|  (X)  "; break;
 			}
 		cout << "|\n";
 
@@ -296,18 +332,18 @@ void Chess::print()
 			case 0: if ((i + j) % 2 == 1)	cout << "|   X   ";
 					else					cout << "|       "; 
 					break;
-			case -1:
-			case 1: cout << "|  | |  "; break;
-			case -2:
-			case 2: cout << "| [__ | "; break;
-			case -3:
-			case 3: cout << "|   O   "; break;
-			case -4:
-			case 4: cout << "|  / \\  "; break;
+			case -1:cout << "|  | |  "; break;
+			case 1: cout << "|  |X|  "; break;
+			case -2:cout << "| [__ | "; break;
+			case 2: cout << "| [XXX| "; break;
+			case -3:cout << "|   O   "; break;
+			case 3: cout << "|   X   "; break;
+			case -4:cout << "|  / \\  "; break;
+			case 4: cout << "|  /X\\  "; break;
 			case -5:
 			case 5: cout << "|   |   "; break;
-			case -6:
-			case 6: cout << "|  / \\  "; break;
+			case -6:cout << "|  / \\  "; break;
+			case 6: cout << "|  /X\\  "; break;
 			}
 		cout << "| " << i + 1 << endl;
 

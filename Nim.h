@@ -31,6 +31,16 @@ public:
 	*/
 	std::vector<Move*> getMoves(int player);
 
+	/*
+	Returns the next move to be made by the AI using the last move applied
+	*/
+	Move * getNextMove(Move * prevMove, int player);
+
+	/*
+	used for getting the next move
+	*/
+	Move * getInitMove(int player);
+
 	// Returneaza mutarea citita
 	Move* readHumanMove(int player);
 

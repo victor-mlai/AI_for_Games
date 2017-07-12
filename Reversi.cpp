@@ -15,9 +15,9 @@ bool Reversi::isOutsidePoint(Point p) {
 
 bool Reversi::isValid(Move* move)
 {
-	RevMove mv = *(RevMove*)move;
+	if (!move)	return true;
 
-	if (mv.row == -1)	return true;
+	RevMove mv = *(RevMove*)move;
 
 	Point v = { mv.row, mv.col };
 	if (isOutsidePoint(v) || table[mv.row][mv.col] != 0)
@@ -97,6 +97,34 @@ std::vector<Move*> Reversi::getMoves(int player)
 	return moves;
 }
 
+Move * Reversi::getNextMove(Move * prevMove, int player)
+{
+	RevMove* mv;
+	RevMove* pmv = (RevMove*)prevMove;
+
+	std::vector<Move*> moves;
+	int i = pmv->row;
+	int j = pmv->col + 1;
+	for (; i < n; i++) {
+		for (; j < n; j++) {
+			mv = new RevMove(i, j, player, n);
+			if (isValid(mv)) {
+				return mv;
+			}
+			delete mv;
+		}
+		j = 0;
+	}
+
+	return NULL;
+}
+
+// move used to get the first valid move
+Move * Reversi::getInitMove(int player)
+{
+	return new RevMove(0, -1, player, n);
+}
+
 Move* Reversi::readHumanMove(int player)
 {
 	if (player == -1)
@@ -119,7 +147,7 @@ Move* Reversi::readHumanMove(int player)
 	int i, j;
 	i = _getch();
 	if (i == 'u') { return new Move(true); }
-	if (i == 'p') { return new RevMove(-1, -1, player, n); }
+	if (i == 'p') { return NULL; }
 
 	i -= '0';
 	cout << i;
@@ -171,6 +199,7 @@ int Reversi::eval(int player)
 
 void Reversi::apply_move(Move * mv)
 {
+	if (!mv) return;
 	RevMove move = *(RevMove*)mv;
 	RevMove* temp = (RevMove*)mv;
 
@@ -210,10 +239,9 @@ void Reversi::apply_move(Move * mv)
 
 void Reversi::undo(Move * mv)
 {
-	RevMove move = *(RevMove*)mv;
+	if (!mv) return;
 
-	if (move.row == -1 && move.col == -1)	// daca am mutarea nula
-		return; 
+	RevMove move = *(RevMove*)mv;
 	
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
@@ -229,19 +257,24 @@ void Reversi::print()
 	}
 	std::cout << std::endl;
 
+	int x = 0, o = 0;
 	for (int i = 0; i < n; i++)	{
 		for (int j = 0; j < n; j++) {
 			if (table[i][j] == 0)
 				std::cout << '.';
-			else if (table[i][j] == 1)
+			else if (table[i][j] == 1) {
 				std::cout << 'O';
-			else
+				o++;
+			}
+			else {
 				std::cout << 'X';
+				x++;
+			}
 			std::cout << " ";
 		}
 		std::cout << i << std::endl;
 	}
-	std::cout << std::endl;
+	std::cout << "\n X: " << x << "\n O: " << o << "\n\n";
 }
 
 void Reversi::showRezult(int turn)
