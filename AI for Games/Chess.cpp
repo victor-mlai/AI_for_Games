@@ -86,6 +86,96 @@ Move * Chess::getInitMove(int player) {
 	return new ChessMove(0, 0, 0, 0, player);
 }
 
+//std::vector<Move*> Chess::getMoves(int player)
+//{
+//	std::vector<Move*> moves;
+//	ChessMove* move;
+//
+//	for (int i = 0; i < 8; i++) {
+//		for (int j = 0; j < 8; j++) {
+//			int piece = table[i][j] * player;
+//			if (piece > 0) {	// if it's player's piece
+//				switch (piece)
+//				{
+//					int n;
+//				case 1:	// tower
+//					Pair d[] = { {-1, 0}, {0, 1}, {1, 0}, {0, -1} };
+//					for (int k = 0; k < 4; k++) {
+//						Pair c = { i, j };
+//						while (i < n && j < n && i >= 0 && j >= 0 && table[c.x][c.y] !=)
+//					}
+//					if (x != 0 && y != 0)	return false;
+//
+//					n = max(x, y);
+//
+//					for (int i = 1; i < n; i++) {
+//						c.x += d.x;
+//						c.y += d.y;
+//						if (table[c.x][c.y] != 0)
+//							return false;
+//					}
+//					break;
+//				case 2:	// knight
+//					if (x + y != 3 || x == 3 || y == 3)	return false;	// return (x + y == 3 && x != 3 && y != 3);
+//					break;
+//				case 3:	// bishop
+//					if (x != y)	return false;
+//
+//					n = x;
+//
+//					for (int i = 1; i < n; i++) {
+//						c.x += d.x;
+//						c.y += d.y;
+//						if (table[c.x][c.y] != 0)
+//							return false;
+//					}
+//					break;
+//				case 4:	// qween
+//					if ((x != 0 && y != 0) && x != y)	return false;
+//
+//					n = max(x, y);
+//
+//					for (int i = 1; i < n; i++) {
+//						c.x += d.x;
+//						c.y += d.y;
+//						if (table[c.x][c.y] != 0)
+//							return false;
+//					}
+//					break;
+//				case 5:	// king
+//					if (x > 1 || y > 1)	return false;	// return !(x > 1 || y > 1);
+//					break;
+//				case 6:	// pawn
+//					if ((mv.to.x - mv.from.x) * mv.player < 0)	return false;
+//					c.x += d.x;
+//					c.y += d.y;
+//					if (y == 0) {
+//						if (table[c.x][c.y] != 0)
+//							return false;
+//						if (x > 2)
+//							return false;
+//						// moving 2 cells horizontally
+//						if (x == 2) {
+//							if ((mv.from.x == 1 && mv.player == 1) || (mv.from.x == 6 && mv.player == -1))
+//								if (table[c.x + d.x][c.y + d.y] == 0)
+//									return true;
+//							return false;
+//						}
+//					}
+//					else if (x != 1 || y != 1 || table[c.x][c.y] * mv.player >= 0)
+//						return false;
+//					break;
+//				default:
+//					break;
+//				}
+//			}
+//		}
+//	}
+//
+//	return moves;
+//}
+
+
 Move * Chess::readHumanMove(int player)
 {
 	if (player == -1)
@@ -235,7 +325,16 @@ void Chess::apply_move(Move * move)
 	ChessMove* mv = (ChessMove*)move;
 
 	mv->pieceTaken = table[mv->to.x][mv->to.y];
-	table[mv->to.x][mv->to.y] = table[mv->from.x][mv->from.y];
+	mv->pieceMoved = table[mv->from.x][mv->from.y];
+
+	// check if I move a pawn to the first/last row to put a queen instead
+	if ((mv->to.x == 0 || mv->to.x == 7) && (abs(mv->pieceMoved) == 6)) {
+		table[mv->to.x][mv->to.y] = mv->player * 4;
+	}
+	else {
+		table[mv->to.x][mv->to.y] = mv->pieceMoved;
+	}
+
 	table[mv->from.x][mv->from.y] = 0;
 
 	move = mv;
@@ -245,7 +344,7 @@ void Chess::undo(Move * move)
 {
 	ChessMove mv = *(ChessMove*)move;
 
-	table[mv.from.x][mv.from.y] = table[mv.to.x][mv.to.y];
+	table[mv.from.x][mv.from.y] = mv.pieceMoved;
 	table[mv.to.x][mv.to.y] = mv.pieceTaken;
 }
 

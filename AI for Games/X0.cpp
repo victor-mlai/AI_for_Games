@@ -120,10 +120,10 @@ void X0::undo(Move* mv) {
 }
 
 bool X0::ended() {
-	return getMoves(0).empty() || winner() != 0;
+	return (getMoves(0).empty() || winner() != 0);
 }
 
-// Returns -1 if player lost, 1 if player 1 and 0 if no one won yet
+// Returns -1 if player lost, 1 if player won and 0 if no one won yet
 int X0::eval(int player) {
 	return player*winner();
 }

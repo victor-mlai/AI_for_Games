@@ -2,6 +2,7 @@
 #include "Game.h"
 
 struct Pair { int x, y; };
+enum Piece {Rook = 1, Knight = 2, Bishop = 3, Queen = 4, King = 5, Pawn = 6};
 
 class ChessMove : public Move
 {
@@ -10,6 +11,7 @@ public:
 	Pair to;
 	int player;	// -1 or 1 (White or Black)
 	int pieceTaken;
+	int pieceMoved;
 
 	ChessMove(int Arow, int Acol, int Brow, int Bcol, int player) : from({ Arow, Acol }), to({ Brow, Bcol }), player(player) {}
 	~ChessMove() {}

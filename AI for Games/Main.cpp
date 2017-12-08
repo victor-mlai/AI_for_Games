@@ -9,15 +9,15 @@
 enum Players{Human, AI, Monkey};
 
 /**
-* Implementarea de negamax cu alpha-beta pruning
-* Return val: o pereche <first, second>
-*	first: cel mai bun scor care poate fi obtinut de jucatorul aflat la mutare,
-*	second: mutarea propriu-zisa
+* The implementation of negamax with alpha-beta pruning
+* Return val: a pair <first, second>
+*	first: best score that the current can obtain
+*	second: the move itself
 */
 std::pair<int, Move*>
 minimax_abeta(Game* state, int player, int depth, int alfa, int beta) {
 	if (depth == 0 || state->ended()) {
-		return std::pair<int, Move*>(state->eval(player), nullptr);
+		return std::pair<int, Move*>(state->eval(player), NULL);
 	}
 
 	int score;
@@ -31,16 +31,16 @@ minimax_abeta(Game* state, int player, int depth, int alfa, int beta) {
 	// while move is not NULL
 	while (move = state->getNextMove(move, player)) {
 		state->apply_move(move);
-
+	
 		score = -minimax_abeta(state, -player, depth - 1, -beta, -alfa).first;
-
+	
 		state->undo(move);
-
+	
 		if (score > alfa) {
 			alfa = score;
 			bestMove = move;
 		}
-
+	
 		if (alfa >= beta) {
 			break;
 		}
@@ -80,36 +80,50 @@ int main() {
 		switch (_getch()) {
 		case '1':
 			game = new X0();
-			depth = 5;
+			depth = 9;
 			break;
 		case '2':
 			game = new Nim();
-			depth = 3;
+			depth = 6;
 			break;
 		case '3':
 			game = new Reversi();
-			depth = 2;
+			depth = 5;
 			break;
 		default:
 			game = new Chess();
-			depth = 2;
+			depth = 4;
 			break;
 		}
 
+		// Choosing Player 1
 		player1 = Human;
+		/*std::cout << "Choose Player 1\n1) a friend\n2) AI\nx) a monkey\nPress 1, 2 or 3\n\n";
+		switch (_getch()) {
+		case '1':
+			player1 = Human;
+			break;
+		case '2':
+			player1 = AI;
+			depth *= 2;
+			break;
+		default:
+			player1 = Monkey;
+			break;
+		}*/
 
 		// Choosing Player 2
-		std::cout << "Against\n1) a friend\n2) AI\nx) a monkey\nPress 1, 2 or 3\n\n";
+		std::cout << "Choose Player 2\n1) a friend\n2) AI\nx) a monkey\nPress 1, 2 or 3\n\n";
 		switch (_getch()) {
 		case '1':
 			player2 = Human;
 			break;
 		case '2':
 			player2 = AI;
-			depth *= 2;
 			break;
 		default:
 			player2 = Monkey;
+			depth /= 2;
 			break;
 		}
 
